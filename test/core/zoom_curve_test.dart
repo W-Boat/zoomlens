@@ -1,5 +1,3 @@
-import 'dart:ui' show Offset;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zoomlens/core/models/keyframe.dart';
 import 'package:zoomlens/core/models/zoom_curve.dart';

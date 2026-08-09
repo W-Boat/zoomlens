@@ -1,5 +1,3 @@
-import 'dart:ui' show Offset;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zoomlens/core/math/easing.dart';
 import 'package:zoomlens/core/models/keyframe.dart' show EasingType;
@@ -20,7 +18,7 @@ void main() {
     });
 
     test('easeIn 慢于线性、easeOut 快于线性（中间值 0.5）', () {
-      final t = 0.5;
+      const t = 0.5;
       final linear = evaluateEasing(EasingType.linear, t);
       final inV = evaluateEasing(EasingType.easeIn, t);
       final outV = evaluateEasing(EasingType.easeOut, t);

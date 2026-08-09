@@ -20,8 +20,7 @@ linter:
     - prefer_const_constructors
     - prefer_const_constructors_in_immutables
     - prefer_const_literals_to_create_immutables
-    # 空安全相关
-    - avoid_null_checks_in_null_aware_branches
+    # 空安全相关（规则清单以 dart.dev/lints 与 flutter_lints 文档为准）
     # 代码卫生
     - unawaited_futures
     - unnecessary_lambdas
