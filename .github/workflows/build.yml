@@ -1,0 +1,94 @@
+# 变焦动画相机 CI/CD 流水线（规划文档 6.2 节）
+# 唯一构建平台：禁止本地生产构建。所有构建在 GitHub-hosted runner 的干净环境完成。
+#
+# 触发条件：
+#   - PR / push 任意分支        → 代码检查（lint + 单测）
+#   - push main / 打 v* tag     → 全量构建（Android APK + iOS IPA）
+#
+# 平台目录说明：仓库为手写骨架，不含 android/ios 平台文件，
+# 由 CI 通过 `flutter create --platforms=...` 生成，保证包名与配置一致。
+
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint & Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Run Lint
+        run: |
+          chmod +x scripts/lint.sh
+          ./scripts/lint.sh
+      - name: Run Unit Tests
+        run: |
+          chmod +x scripts/test.sh
+          ./scripts/test.sh
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 30
+
+  build-android:
+    name: Build Android APK
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate Android Platform
+        run: flutter create --platforms=android --project-name zoomlens --org com.example .
+      - name: Build APK
+        run: flutter build apk --release
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
+
+  build-ios:
+    name: Build iOS IPA
+    needs: lint-and-test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate iOS Platform
+        run: flutter create --platforms=ios --project-name zoomlens --org com.example .
+      - name: Build IPA (unsigned)
+        run: flutter build ios --release --no-codesign
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/iphoneos/*.ipa
+          retention-days: 30

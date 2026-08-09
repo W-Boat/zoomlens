@@ -1,0 +1,30 @@
+# 严格模式配置（规划文档 7.1「类型检查：启用严格模式」）
+# Dart 语言本身是类型安全的；此处通过 analyzer + linter 规则把常见问题提前到静态检查阶段。
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # 骨架阶段允许 TODO 注释存在，CI 的 lint 检查通过
+    todo: info
+
+linter:
+  rules:
+    # 尽可能使用 final
+    - prefer_final_locals
+    - prefer_final_fields
+    # 尽可能使用 const 构造
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_literals_to_create_immutables
+    # 空安全相关
+    - avoid_null_checks_in_null_aware_branches
+    # 代码卫生
+    - unawaited_futures
+    - unnecessary_lambdas
+    - unnecessary_statements
+    - avoid_print
+    - prefer_single_quotes

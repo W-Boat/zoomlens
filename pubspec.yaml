@@ -1,0 +1,41 @@
+name: zoomlens
+description: 变焦动画相机 —— 为照片/视频添加屏幕层面缩放动画效果的移动应用。
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 状态管理（规划文档：Redux / Provider，此处选用 Provider）
+  provider: ^6.1.2
+
+  # 拍摄模块：相机权限、预览、拍照、录像
+  camera: ^0.11.0
+  permission_handler: ^11.3.1
+
+  # 素材回放 / 预览
+  video_player: ^2.9.2
+
+  # 文件目录（导出临时文件、草稿存放）
+  path_provider: ^2.1.4
+
+  # 视频处理：导出时按曲线逐帧渲染变焦效果（规划文档：FFmpeg）
+  # 注：当前为体积较小的默认包；如需全部编解码器可在 CI 中改用 ffmpeg_kit_flutter_full
+  ffmpeg_kit_flutter: ^6.0.3
+
+  # 本地存储（规划文档：SQLite / Hive，此处选用 Hive）
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

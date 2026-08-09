@@ -1,0 +1,27 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+
+# 本地开发配置（不提交）
+*.local
+.env
+
+# 导出产物
+export/
+*.mp4
+*.mov
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 测试/覆盖率报告
+coverage/
+
+# IDE Ԫ����
+.reasonix/
