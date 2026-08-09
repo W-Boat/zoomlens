@@ -21,7 +21,8 @@ class LibraryService {
   /// 读取全部草稿（最近创建的在前）。
   Future<List<Map<dynamic, dynamic>>> listDrafts() async {
     final box = await _openBox();
-    return box.values.toList().reversed.toList();
+    final drafts = box.values.cast<Map<dynamic, dynamic>>().toList();
+    return drafts.reversed.toList();
   }
 
   /// 删除草稿。

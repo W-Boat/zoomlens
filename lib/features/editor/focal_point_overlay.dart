@@ -27,12 +27,11 @@ class FocalPointOverlay extends StatelessWidget {
               ? null
               : (details) {
                   final local = details.localPosition;
-                  onChanged!(
-                    Offset(
-                      (local.dx / size.width).clamp(0.0, 1.0),
-                      (local.dy / size.height).clamp(0.0, 1.0),
-                    ),
-                  );
+                  final dx =
+                      (local.dx / size.width).clamp(0.0, 1.0).toDouble();
+                  final dy =
+                      (local.dy / size.height).clamp(0.0, 1.0).toDouble();
+                  onChanged!(Offset(dx, dy));
                 },
           child: CustomPaint(
             painter: _FocalPointPainter(center: center),

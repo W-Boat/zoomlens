@@ -37,8 +37,9 @@ class ZoomCurvePainter extends CustomPainter {
     final curveAreaHeight = trackTop - curveAreaTop;
 
     double yForScale(double scale) {
-      final ratio =
-          ((scale - scaleMin) / (scaleMax - scaleMin)).clamp(0.0, 1.0);
+      final ratio = ((scale - scaleMin) / (scaleMax - scaleMin))
+          .clamp(0.0, 1.0)
+          .toDouble();
       return curveAreaTop + (1.0 - ratio) * curveAreaHeight;
     }
 

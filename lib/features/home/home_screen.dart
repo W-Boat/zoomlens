@@ -49,8 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: '预设',
           ),
           NavigationDestination(
-            icon: Icon(Icons.ios_share_outlined),
-            selectedIcon: Icon(Icons.ios_share),
+            icon: Icon(Icons.upload_outlined),
+            selectedIcon: Icon(Icons.upload),
             label: '导出',
           ),
           NavigationDestination(
