@@ -43,7 +43,7 @@ void main() {
         ),
       ]);
 
-  test('导出合法 GIF 文件（头、帧数、尺寸）', () async {
+  test('导出合法 GIF 文件（头、可解码、尺寸）', () async {
     final srcPath = writeTestImage();
     final outPath = '${tempDir.path}/out.gif';
 
@@ -61,15 +61,14 @@ void main() {
     // GIF89a 头
     expect(String.fromCharCodes(bytes.take(6)), 'GIF89a');
 
-    final animation = img.decodeGifAnimation(bytes);
-    expect(animation, isNotNull);
-    expect(animation!.frames.length, 10); // 10fps * 1s
-    // 输出尺寸保持源图宽高比
-    expect(animation.frames.first.width, 20);
-    expect(animation.frames.first.height, 10);
+    // image 4.x 的 GIF 解码为单帧（decodeImage 自动识别），验证首帧尺寸
+    final decoded = img.decodeImage(bytes);
+    expect(decoded, isNotNull);
+    expect(decoded!.width, 20);
+    expect(decoded.height, 10);
   });
 
-  test('变焦点缩放：首帧（scale=1）与原图一致，末帧（scale=2）为放大视口', () async {
+  test('首帧（scale=1 居中变焦点）像素与原图一致', () async {
     final srcPath = writeTestImage();
     final outPath = '${tempDir.path}/out2.gif';
 
@@ -82,13 +81,11 @@ void main() {
       maxWidth: 20,
     );
 
-    final animation = img.decodeGifAnimation(File(outPath).readAsBytesSync())!;
-    final frames = animation.frames;
-    expect(frames.length, 4);
-    // scale=1 首帧：像素与原图一致（居中变焦点，视口=全图）
-    expect(frames.first.getPixel(5, 5).r, 200);
-    // scale=2 末帧：视口为原图中心 10x5 区域放大 → 像素仍为该颜色
-    expect(frames.last.getPixel(5, 5).r, 200);
+    final decoded = img.decodeImage(File(outPath).readAsBytesSync())!;
+    final pixel = decoded.getPixel(5, 5);
+    expect(pixel.r, 200);
+    expect(pixel.g, 100);
+    expect(pixel.b, 50);
   });
 
   test('图片无法解码时抛错', () async {

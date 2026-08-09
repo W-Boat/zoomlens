@@ -45,6 +45,9 @@ class GifExporter {
       encoder.addFrame(frame, duration: frameDurationMs);
     }
     final gif = encoder.finish();
+    if (gif == null) {
+      throw StateError('GIF 编码失败');
+    }
     await File(outputPath).writeAsBytes(gif);
   }
 
