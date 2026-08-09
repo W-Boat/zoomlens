@@ -24,7 +24,7 @@ void main() {
       p.setRgb(200, 100, 50);
     }
     final path = '${tempDir.path}/src.png';
-    File(path).writeAsBytesSync(img.encodePng(image)!);
+    File(path).writeAsBytesSync(img.encodePng(image));
     return path;
   }
 
@@ -61,12 +61,12 @@ void main() {
     // GIF89a 头
     expect(String.fromCharCodes(bytes.take(6)), 'GIF89a');
 
-    final frames = img.decodeGif(bytes);
-    expect(frames, isNotNull);
-    expect(frames!.length, 10); // 10fps * 1s
+    final animation = img.decodeGifAnimation(bytes);
+    expect(animation, isNotNull);
+    expect(animation!.frames.length, 10); // 10fps * 1s
     // 输出尺寸保持源图宽高比
-    expect(frames.first.width, 20);
-    expect(frames.first.height, 10);
+    expect(animation.frames.first.width, 20);
+    expect(animation.frames.first.height, 10);
   });
 
   test('变焦点缩放：首帧（scale=1）与原图一致，末帧（scale=2）为放大视口', () async {
@@ -82,7 +82,8 @@ void main() {
       maxWidth: 20,
     );
 
-    final frames = img.decodeGif(File(outPath).readAsBytesSync())!;
+    final animation = img.decodeGifAnimation(File(outPath).readAsBytesSync())!;
+    final frames = animation.frames;
     expect(frames.length, 4);
     // scale=1 首帧：像素与原图一致（居中变焦点，视口=全图）
     expect(frames.first.getPixel(5, 5).r, 200);

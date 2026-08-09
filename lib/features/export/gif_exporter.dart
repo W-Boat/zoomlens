@@ -40,10 +40,11 @@ class GifExporter {
       frames.add(_renderFrame(source, curve.evaluateAt(t), maxWidth, outHeight));
     }
 
-    final gif = img.encodeGif(frames, duration: frameDurationMs);
-    if (gif == null) {
-      throw StateError('GIF 编码失败');
+    final encoder = img.GifEncoder();
+    for (final frame in frames) {
+      encoder.addFrame(frame, duration: frameDurationMs);
     }
+    final gif = encoder.finish();
     await File(outputPath).writeAsBytes(gif);
   }
 
