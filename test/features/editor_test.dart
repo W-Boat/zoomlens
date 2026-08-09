@@ -85,14 +85,14 @@ void main() {
     final canvas = find.byKey(const Key('zoom-curve-canvas'));
     final topLeft = tester.getTopLeft(canvas);
     final size = tester.getSize(canvas);
-    // 第一个关键帧 t=0, scale=1.0，用画板换算得到 y 坐标后精确点击
+    // 第一个关键帧 t=0, scale=1.0；x 取 2px 避开画布最左边界
     final y = ZoomCurvePainter.yForScale(
       size,
       1.0,
       scaleMin: 0.5,
       scaleMax: 3.0,
     );
-    await tester.tapAt(topLeft + Offset(0, y));
+    await tester.tapAt(topLeft + const Offset(2, 0) + Offset(0, y));
     await tester.pump();
 
     // 未新增关键帧

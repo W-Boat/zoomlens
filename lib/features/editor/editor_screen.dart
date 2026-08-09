@@ -248,11 +248,13 @@ class _EditorScreenState extends State<EditorScreen>
   // ---- 播放 ----
 
   void _togglePlayback() {
-    if (_isPlaying) {
-      _playback.stop();
-    } else {
-      _playback.repeat();
-    }
+    setState(() {
+      if (_isPlaying) {
+        _playback.stop();
+      } else {
+        _playback.repeat();
+      }
+    });
   }
 
   void _onPlayheadChanged(double value) {
