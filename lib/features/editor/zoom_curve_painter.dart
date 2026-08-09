@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/models/keyframe.dart' show Keyframe;
 import '../../core/models/zoom_curve.dart' show ZoomCurve;
 
 /// 曲线编辑器画板：绘制「时间 - 缩放」曲线与变焦点辅助轨道

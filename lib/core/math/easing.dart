@@ -14,7 +14,7 @@ double evaluateEasing(
   Offset control1 = const Offset(0.25, 0.1),
   Offset control2 = const Offset(0.25, 1.0),
 }) {
-  final u = t.clamp(0.0, 1.0);
+  final u = t.clamp(0.0, 1.0).toDouble();
   switch (type) {
     case EasingType.linear:
       return u;

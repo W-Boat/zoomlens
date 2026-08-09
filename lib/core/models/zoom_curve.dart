@@ -1,7 +1,7 @@
 import 'dart:ui' show Offset, lerpDouble;
 
 import '../math/easing.dart' show evaluateEasing;
-import 'keyframe.dart' show EasingType, Keyframe;
+import 'keyframe.dart' show Keyframe;
 
 /// 变焦曲线在某一时刻的采样结果。
 class ZoomSample {
