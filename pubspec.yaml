@@ -18,6 +18,12 @@ dependencies:
   camera: ^0.11.0
   permission_handler: ^11.3.1
 
+  # 素材选择（相册选图）
+  image_picker: ^1.1.2
+
+  # 纯 Dart 图像处理：GIF 导出（变焦动画 MVP 导出方案，不依赖 FFmpeg）
+  image: ^4.2.0
+
   # 素材回放 / 预览
   video_player: ^2.9.2
 

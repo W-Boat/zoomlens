@@ -84,6 +84,10 @@ jobs:
           cache: true
       - name: Generate iOS Platform
         run: flutter create --platforms=ios --project-name zoomlens --org com.example .
+      - name: Configure iOS Permissions
+        # 平台目录由 CI 生成，此处注入运行时权限声明（image_picker 相册）
+        run: |
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string '用于选择素材图片进行变焦编辑'" ios/Runner/Info.plist || true
       - name: Build IPA (unsigned)
         run: flutter build ios --release --no-codesign
       - name: Upload IPA

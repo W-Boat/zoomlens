@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/models/keyframe.dart' show EasingType, Keyframe;
 import '../../core/models/zoom_curve.dart' show ZoomCurve;
+import '../export/gif_exporter.dart' show GifExporter;
 import '../presets/zoom_presets.dart' show ZoomPreset, zoomPresets;
 import 'focal_point_overlay.dart' show FocalPointOverlay;
 import 'zoom_curve_painter.dart' show ZoomCurvePainter;
@@ -33,6 +38,8 @@ class _EditorScreenState extends State<EditorScreen>
   double _playhead = 0.0;
   int? _selectedIndex;
   int? _dragIndex;
+  String? _assetPath;
+  final ImagePicker _imagePicker = ImagePicker();
 
   final List<List<Keyframe>> _undoStack = [];
   final List<List<Keyframe>> _redoStack = [];
@@ -262,6 +269,36 @@ class _EditorScreenState extends State<EditorScreen>
     setState(() => _playhead = value);
   }
 
+  // ---- 素材与导出 ----
+
+  Future<void> _pickImage() async {
+    final picked = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (picked == null || !mounted) return;
+    setState(() => _assetPath = picked.path);
+  }
+
+  Future<void> _exportGif() async {
+    final asset = _assetPath;
+    if (asset == null) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final dir = await getTemporaryDirectory();
+    final outputPath =
+        '${dir.path}/zoom_${DateTime.now().millisecondsSinceEpoch}.gif';
+    try {
+      await const GifExporter().exportGif(
+        assetPath: asset,
+        curve: _curve,
+        outputPath: outputPath,
+        frameRate: 24,
+        duration: 4,
+        maxWidth: 720,
+      );
+      messenger.showSnackBar(SnackBar(content: Text('已导出: $outputPath')));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('导出失败: $e')));
+    }
+  }
+
   // ---- UI ----
 
   String get _selectedInfo {
@@ -279,7 +316,21 @@ class _EditorScreenState extends State<EditorScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('变焦编辑')),
+      appBar: AppBar(
+        title: const Text('变焦编辑'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_photo_alternate_outlined),
+            tooltip: '选择图片',
+            onPressed: _pickImage,
+          ),
+          IconButton(
+            icon: const Icon(Icons.gif_box),
+            tooltip: '导出 GIF',
+            onPressed: _assetPath == null ? null : _exportGif,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           _buildPreview(),
@@ -298,6 +349,7 @@ class _EditorScreenState extends State<EditorScreen>
           builder: (context, constraints) {
             final size = Size(constraints.maxWidth, constraints.maxHeight);
             final sample = _curve.evaluateAt(_playhead);
+            final asset = _assetPath;
             // 以变焦点为锚点的缩放矩阵：translate(f) → scale(s) → translate(-f)
             final matrix = Matrix4.identity()
               ..translateByDouble(
@@ -313,26 +365,41 @@ class _EditorScreenState extends State<EditorScreen>
                   1.0);
             return Stack(
               children: [
-                Center(
-                  child: Transform(
-                    transform: matrix,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.photo_outlined,
-                          size: 96,
-                          color: Colors.white38,
-                        ),
-                        const Text(
-                          '素材预览（骨架）',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        Text(
-                          '${sample.scale.toStringAsFixed(2)}x',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                      ],
+                Positioned.fill(
+                  child: ClipRect(
+                    child: Transform(
+                      transform: matrix,
+                      child: Center(
+                        child: asset == null
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.photo_outlined,
+                                    size: 96,
+                                    color: Colors.white38,
+                                  ),
+                                  const Text(
+                                    '素材预览（骨架）',
+                                    style: TextStyle(color: Colors.white70),
+                                  ),
+                                  Text(
+                                    '${sample.scale.toStringAsFixed(2)}x',
+                                    style: const TextStyle(
+                                        color: Colors.white70),
+                                  ),
+                                ],
+                              )
+                            : Image.file(
+                                File(asset),
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stack) =>
+                                    const Text(
+                                  '图片加载失败',
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                 ),
