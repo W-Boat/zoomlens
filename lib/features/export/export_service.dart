@@ -18,10 +18,13 @@ class ExportOptions {
 
 /// 导出服务（规划文档 2.4 节）。
 ///
-/// 真实实现基于 `ffmpeg_kit_flutter`：
+/// 真实渲染实现待接入 FFmpeg 方案后填充：
 /// 1. 逐帧按 ZoomCurve.evaluateAt 采样，以变焦点为锚点合成缩放帧；
-/// 2. 通过 FFmpeg 编码输出（H.264 / H.265），支持后台执行与进度回调；
+/// 2. 编码输出（H.264 / H.265），支持后台执行与进度回调；
 /// 3. 渐进式导出，控制内存占用（1080p ≤ 500MB，4K ≤ 1GB）。
+///
+/// 注：骨架阶段不依赖任何 FFmpeg 插件（ffmpeg-kit 已从 Maven Central 移除），
+/// 仅保留命令构造接口，见 pubspec.yaml 说明。
 class ExportService {
   const ExportService();
 

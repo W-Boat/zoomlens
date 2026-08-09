@@ -24,9 +24,10 @@ dependencies:
   # 文件目录（导出临时文件、草稿存放）
   path_provider: ^2.1.4
 
-  # 视频处理：导出时按曲线逐帧渲染变焦效果（规划文档：FFmpeg）
-  # 注：当前为体积较小的默认包；如需全部编解码器可在 CI 中改用 ffmpeg_kit_flutter_full
-  ffmpeg_kit_flutter: ^6.0.3
+  # 视频处理（规划文档：FFmpeg）——骨架阶段暂不引入：
+  # ffmpeg_kit_flutter 的 Android artifact（com.arthenica:ffmpeg-kit-https）
+  # 已从 Maven Central 移除（arthenica ffmpeg-kit 停止维护），公共仓库无法解析。
+  # ExportService 保留 FFmpeg 命令构造接口，集成方案待评估后接入。
 
   # 本地存储（规划文档：SQLite / Hive，此处选用 Hive）
   hive: ^2.2.3
