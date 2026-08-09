@@ -298,13 +298,17 @@ class _EditorScreenState extends State<EditorScreen>
             final sample = _curve.evaluateAt(_playhead);
             // 以变焦点为锚点的缩放矩阵：translate(f) → scale(s) → translate(-f)
             final matrix = Matrix4.identity()
-              ..translate(
+              ..translateByDouble(
                   sample.focalPoint.dx * size.width,
-                  sample.focalPoint.dy * size.height)
-              ..scale(sample.scale)
-              ..translate(
+                  sample.focalPoint.dy * size.height,
+                  0.0,
+                  1.0)
+              ..scaleByDouble(sample.scale, sample.scale, 1.0, 1.0)
+              ..translateByDouble(
                   -sample.focalPoint.dx * size.width,
-                  -sample.focalPoint.dy * size.height);
+                  -sample.focalPoint.dy * size.height,
+                  0.0,
+                  1.0);
             return Stack(
               children: [
                 Center(
