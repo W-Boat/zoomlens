@@ -5,12 +5,24 @@ import 'package:flutter/material.dart';
 /// 以十字准星 + 圆形标记显示当前变焦点，支持拖拽调整位置。
 /// [focalPoint] 为相对坐标（0..1），与素材分辨率解耦。
 class FocalPointOverlay extends StatelessWidget {
-  const FocalPointOverlay({super.key, required this.focalPoint, this.onChanged});
+  const FocalPointOverlay({
+    super.key,
+    required this.focalPoint,
+    this.onChanged,
+    this.onDragStart,
+    this.onDragEnd,
+  });
 
   final Offset focalPoint;
 
   /// 拖拽回调（相对坐标 0..1）。
   final ValueChanged<Offset>? onChanged;
+
+  /// 拖拽开始（可用于记录撤销快照）。
+  final VoidCallback? onDragStart;
+
+  /// 拖拽结束。
+  final VoidCallback? onDragEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +35,12 @@ class FocalPointOverlay extends StatelessWidget {
         );
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
+          onPanStart: onDragStart == null
+              ? null
+              : (_) => onDragStart!(),
+          onPanEnd: onDragEnd == null
+              ? null
+              : (_) => onDragEnd!(),
           onPanUpdate: onChanged == null
               ? null
               : (details) {
