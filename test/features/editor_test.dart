@@ -97,8 +97,9 @@ void main() {
 
     // 未新增关键帧
     expect(find.text('2 帧'), findsOneWidget);
-    // 已选中 → 删除可用
-    expect(isEnabled(tester, Icons.delete_outline), isTrue);
+    // 已选中：底部信息栏显示选中关键帧（#0：t=0, s=1.0, fp=(0.50, 0.50)）
+    // 注：2 帧时删除按钮受「最少 2 帧」保护仍禁用，故以信息栏文本断言选中
+    expect(find.textContaining('关键帧 #0'), findsOneWidget);
   });
 
   testWidgets('播放/暂停预览', (tester) async {
