@@ -6,18 +6,18 @@ void main() {
   testWidgets('应用可正常启动并渲染五大模块', (tester) async {
     await tester.pumpWidget(const ZoomLensApp());
 
-    // IndexedStack 会构建全部 5 个页面
-    expect(find.text('变焦编辑'), findsOneWidget); // 编辑页 AppBar
-    expect(find.text('效果预设'), findsOneWidget); // 预设页 AppBar
-    expect(find.text('相机预览（骨架）'), findsOneWidget); // 拍摄页
-    expect(find.text('素材预览（骨架）'), findsOneWidget); // 编辑页预览区
-    expect(find.text('暂无素材'), findsOneWidget); // 素材页
+    // IndexedStack 仅将当前 tab 视为 onstage，其余页面需 skipOffstage: false
+    expect(find.text('变焦编辑', skipOffstage: false), findsOneWidget); // 编辑页 AppBar
+    expect(find.text('效果预设', skipOffstage: false), findsOneWidget); // 预设页 AppBar
+    expect(find.text('相机预览（骨架）'), findsOneWidget); // 拍摄页（当前 tab）
+    expect(find.text('素材预览（骨架）', skipOffstage: false), findsOneWidget); // 编辑页预览区
+    expect(find.text('暂无素材', skipOffstage: false), findsOneWidget); // 素材页
 
-    // 底部导航标签
+    // 底部导航标签（始终 onstage）
     expect(find.text('拍摄'), findsNWidgets(2)); // 拍摄页 AppBar + 导航标签
     expect(find.text('编辑'), findsOneWidget);
     expect(find.text('预设'), findsOneWidget);
-    expect(find.text('导出'), findsNWidgets(2)); // 导出页 AppBar + 导航标签
+    expect(find.text('导出'), findsOneWidget); // 导出页 AppBar 处于 offstage
     expect(find.text('素材'), findsOneWidget);
   });
 
