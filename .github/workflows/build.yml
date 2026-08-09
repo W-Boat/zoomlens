@@ -63,8 +63,26 @@ jobs:
           java-version: '17'
       - name: Generate Android Platform
         run: flutter create --platforms=android --project-name zoomlens --org com.example .
+      - name: Configure Android SDK Versions
+        # 新版插件（image_picker_android 0.8.13+）要求较高 compileSdk/minSdk；
+        # 模板默认用 flutter.compileSdkVersion，可能低于插件最低要求，显式抬高。
+        run: |
+          if [ -f android/app/build.gradle.kts ]; then
+            sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 36/' android/app/build.gradle.kts
+            sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 24/' android/app/build.gradle.kts
+          else
+            sed -i 's/compileSdk flutter.compileSdkVersion/compileSdk 36/' android/app/build.gradle
+            sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 24/' android/app/build.gradle
+          fi
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release 2>&1 | tee build-log.txt
+      - name: Upload Build Log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-log
+          path: build-log.txt
+          retention-days: 30
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
