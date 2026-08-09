@@ -5,8 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/models/keyframe.dart' show EasingType, Keyframe;
+import '../../core/models/project_draft.dart' show ProjectDraft;
 import '../../core/models/zoom_curve.dart' show ZoomCurve;
 import '../export/gif_exporter.dart' show GifExporter;
+import '../library/library_service.dart' show LibraryService;
 import '../presets/zoom_presets.dart' show ZoomPreset, zoomPresets;
 import 'focal_point_overlay.dart' show FocalPointOverlay;
 import 'zoom_curve_painter.dart' show ZoomCurvePainter;
@@ -299,6 +301,23 @@ class _EditorScreenState extends State<EditorScreen>
     }
   }
 
+  /// 将当前素材 + 曲线保存为草稿（素材库可查看/删除，恢复待跨页状态接入）。
+  Future<void> _saveDraft() async {
+    final asset = _assetPath;
+    if (asset == null) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await const LibraryService().saveDraft(ProjectDraft(
+        assetPath: asset,
+        keyframes: _keyframes,
+        createdAt: DateTime.now(),
+      ));
+      messenger.showSnackBar(const SnackBar(content: Text('草稿已保存')));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('保存失败: $e')));
+    }
+  }
+
   // ---- UI ----
 
   String get _selectedInfo {
@@ -328,6 +347,11 @@ class _EditorScreenState extends State<EditorScreen>
             icon: const Icon(Icons.gif_box),
             tooltip: '导出 GIF',
             onPressed: _assetPath == null ? null : _exportGif,
+          ),
+          IconButton(
+            icon: const Icon(Icons.save_outlined),
+            tooltip: '保存草稿',
+            onPressed: _assetPath == null ? null : _saveDraft,
           ),
         ],
       ),

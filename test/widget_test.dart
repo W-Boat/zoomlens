@@ -5,6 +5,8 @@ import 'package:zoomlens/app.dart';
 void main() {
   testWidgets('应用可正常启动并渲染五大模块', (tester) async {
     await tester.pumpWidget(const ZoomLensApp());
+    // 等待 LibraryScreen 异步加载完成（Hive 未初始化时快速落到空态）
+    await tester.pumpAndSettle();
 
     // IndexedStack 仅将当前 tab 视为 onstage，其余页面需 skipOffstage: false
     expect(find.text('变焦编辑', skipOffstage: false), findsOneWidget); // 编辑页 AppBar

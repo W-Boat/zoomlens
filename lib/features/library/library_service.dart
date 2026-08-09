@@ -19,12 +19,16 @@ class LibraryService {
     return box.add(draft.toJson());
   }
 
-  /// 读取全部草稿（最近创建的在前）。
-  Future<List<ProjectDraft>> listDrafts() async {
+  /// 读取全部草稿（最近创建的在前），携带 Hive key 以便删除。
+  Future<List<MapEntry<int, ProjectDraft>>> listDrafts() async {
     final box = await _openBox();
-    final raw = box.values.cast<Map<dynamic, dynamic>>().toList().reversed;
+    final entries = box.toMap().entries.toList().reversed;
     return [
-      for (final m in raw) ProjectDraft.fromJson(m.cast<String, dynamic>()),
+      for (final e in entries)
+        MapEntry(
+          e.key as int,
+          ProjectDraft.fromJson((e.value as Map).cast<String, dynamic>()),
+        ),
     ];
   }
 
